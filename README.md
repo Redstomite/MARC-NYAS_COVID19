@@ -4,6 +4,9 @@ Created for the NYAS Combating COVID19 project
 
 Team:
 Rahul P.
+
 Aria M.
-Nancy H
+
+Nancy H.
+
 Fatima T.
