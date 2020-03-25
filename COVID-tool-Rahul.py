@@ -1,8 +1,9 @@
 import cv2
 import os
 import time
+import pandas as pd
 import numpy as np
-from PIL import image
+from PIL import Image
 from pymongo import MongoClient
 
 camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -10,19 +11,25 @@ camera.set(3, 640)
 camera.set(4, 480)
 face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-idcsv = pd.read_csv('idname.csv')
-idnum = 0
+idcsv = pd.read_csv('idcsv.csv')
 face_id = 0
-for index, row in idcsv.iterrows():
-    idnum = row["ID"]
-    name = row["Name"]
-    if if name == "nan" or name == "":
-        face_id = name+1
 
-time.sleep(2)
+for index, row in idcsv.iterrows():
+    face_id += 1
+
+face_id += 1
+first_name = input("Enter first name (and middle name if applicable): ")
+second_name = input("Enter family/second name: ")
+
+idcsv.at[face_id, "ID"] = face_id
+idcsv.at[face_id, "First Name"] = first_name
+idcsv.at[face_id, "Last Name"] = last_name
+idcsv.to_csv("idcsv.csv")
+
+#time.sleep(2)
 count = 0
 
-while True:
+"""while True:
     ret, img = camera.read()
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faces = face_detector.detectMultiScale(gray, 1.3, 5)
@@ -71,4 +78,6 @@ recognizer.write('trainer/trainer.yml')
 print("\n[System] {0} faces trained. Exiting Program".format(len(np.unique(ids))))
 
 print("[System] Program: Success")
-print("[System] Process finished with exit code 0")
+print("[System] Process finished with exit code 0")"""
+
+print(face_id)
