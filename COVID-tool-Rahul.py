@@ -19,12 +19,12 @@ for index, row in idcsv.iterrows():
 
 face_id += 1
 first_name = input("Enter first name (and middle name if applicable): ")
-second_name = input("Enter family/second name: ")
+last_name = input("Enter family/second name: ")
 
 idcsv.at[face_id, "ID"] = face_id
 idcsv.at[face_id, "First Name"] = first_name
 idcsv.at[face_id, "Last Name"] = last_name
-idcsv.to_csv("idcsv.csv")
+idcsv.to_csv("idcsv.csv", index=False)
 
 #time.sleep(2)
 count = 0
