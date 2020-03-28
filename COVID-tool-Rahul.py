@@ -10,6 +10,7 @@ camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 camera.set(3, 640)
 camera.set(4, 480)
 face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+print(cv2.CascadeClassifier.empty(face_detector))
 
 idcsv = pd.read_csv('idcsv.csv')
 face_id = 0
@@ -18,16 +19,55 @@ for index, row in idcsv.iterrows():
     face_id += 1
 
 face_id += 1
-first_name = input("Enter first name (and middle name if applicable): ")
-last_name = input("Enter family/second name: ")
+first_name = input("Enter first name (and middle name if applicable) in uppercase: ")
+last_name = input("Enter family/second name in uppercase: ")
 
-idcsv.at[face_id, "ID"] = face_id
-idcsv.at[face_id, "First Name"] = first_name
-idcsv.at[face_id, "Last Name"] = last_name
-idcsv.to_csv("idcsv.csv", index=False)
-
-#time.sleep(2)
 count = 0
+recognizer = cv2.face.LBPHFaceRecognizer_create()
+recognizer.read('trainer/trainer.yml')
+cascadePath = "haarcascade_frontalface_default.xml"
+faceCascade = cv2.CascadeClassifier(cascadePath);
+
+id = 0
+
+idcsv = pd.read_csv('idcsv.csv')
+name_list = ["none"]
+
+for index, row in idcsv.iterrows():
+    id = row["ID"]
+    first_name = row["First Name"]
+    last_name = row["Last Name"]
+    if id == "nan" or id == "":
+        break
+    else:
+        name_list.append(first_name+" "+last_name)
+    print(id)
+print(name_list)
+
+cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+cam.set(3, 640)
+cam.set(4, 480)
+
+minW = 0.1 * cam.get(3)
+minH = 0.1 * cam.get(4)
+
+
+ret, img = cam.read()
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+faces = faceCascade.detectMultiScale(gray)
+
+print(faces)
+for (x, y, w, h) in faces:
+    cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+    id, confidence = recognizer.predict(gray[y:y + h, x:x + w])
+
+    if (confidence < 100):
+        confidence = "  {0}%".format(round(100 - confidence))
+
+    print(id, confidence )
+
+    pred_person_regestration = name_list[int(id)]
+    confirmation = input("Is your name "+pred_person_regestration+"?")
 
 """while True:
     ret, img = camera.read()
