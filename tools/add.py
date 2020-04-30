@@ -8,6 +8,10 @@ from cryptography.fernet import Fernet
 
 
 class Add:
+    """
+    Class to deal with new users.
+    """
+
     nationality = ""
     first_name = ""
     middle_name = ""
@@ -32,6 +36,11 @@ class Add:
 
     with open("data/csv/dataset.csv.decrypted", "wb") as f:
         f.write(token)
+    """
+    Uses the Fernet key of the encrypted csv file to decrypt its contents and
+    create a new temporary file.
+    """
+
 
     def __init__(self):
         self.nationality = ""
@@ -48,6 +57,14 @@ class Add:
         self.travelled = "No"
 
     def load(self, details):
+        """
+        Loads data and sets values within the class.
+
+        Parameters
+        ----------
+        details : list
+            A list of details of the user.
+        """
         self.nationality = details[0]
         self.nationality = details[1]
         self.first_name = details[2]
@@ -59,6 +76,9 @@ class Add:
         self.df = pd.read_csv("data/csv/dataset.csv.decyrpted", index=False)
 
     def check(self):
+        """
+        Checks if user is in database.
+        """
         recognizer = cv2.face.LBPHFaceRecognizer_create()
         recognizer.read("trainer/trainer.yml")
         cascadepath = "haarcascade_frontalface_default.xml"
@@ -105,6 +125,9 @@ class Add:
         return return_output
 
     def user_add(self, confirm):
+        """
+        Adds user to database.
+        """
         if self.lev >= 2 and self.confidence <= 45 and confirm == "yes":
             face_id = 0
             for row in self.df.iterrows():
@@ -141,6 +164,9 @@ class Add:
             raise NotImplementedError("Model output 'user in database'. If not checked user, please do.")
 
     def getimagesandlabels(self, path):
+        """
+        System function. No calling.
+        """
         imagepaths = [os.path.join(path, f) for f in os.listdir(path)]
         facesamples = []
         idnum = 0
@@ -157,6 +183,9 @@ class Add:
         return facesamples, ids
 
     def train(self):
+        """
+        Trains yml model.
+        """
         path = self.nationality
         faces, ids = self.getimagesandlabels(path)
         self.recognizer.train(faces, np.array(ids))
@@ -164,6 +193,9 @@ class Add:
         return ids
 
     def flush(self):
+        """
+        Resets all values and destroys decrypted csv file.
+        """
         self.nationality = ""
         self.first_name = ""
         self.middle_name = ""
