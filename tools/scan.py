@@ -6,7 +6,7 @@ import os
 
 class Scan:
 
-    def __init__(self):
+    def __init__(self, ):
         pass
 
     def scan(self):
