@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 import pylevenshtein as pylev
+from cryptography.fernet import Fernet
 
 
 class Add:
@@ -19,6 +20,19 @@ class Add:
     df = pd.DataFrame()
     recognizer = cv2.face.LBPHFaceRecognizer_create()
 
+    file = open("key.key", "rb")
+    key = file.read()
+    file.close()
+
+    with open("data/csv/dataset.csv.encrypted", "rb") as f:
+        data = f.read()
+
+    fernet = Fernet(key)
+    token = fernet.decrypt(data)
+
+    with open("data/csv/dataset.csv.decrypted", "wb") as f:
+        f.write(token)
+
     def __init__(self):
         self.nationality = ""
         self.first_name = ""
@@ -31,6 +45,7 @@ class Add:
         self.df = pd.DataFrame()
         self.details = []
         self.recognizer = cv2.face.LBPHFaceRecognizer_create()
+        self.travelled = "No"
 
     def load(self, details):
         self.nationality = details[0]
@@ -40,11 +55,12 @@ class Add:
         self.last_name = details[4]
         self.gender = details[5]
         self.age = details[6]
-        self.df = pd.read_csv(self.nationality + '.csv', index=False)
+        self.travelled = details[7]
+        self.df = pd.read_csv("data/csv/dataset.csv.decyrpted", index=False)
 
     def check(self):
         recognizer = cv2.face.LBPHFaceRecognizer_create()
-        recognizer.read('trainer/trainer.yml')
+        recognizer.read("trainer/trainer.yml")
         cascadepath = "haarcascade_frontalface_default.xml"
         facecascade = cv2.CascadeClassifier(cascadepath)
 
@@ -119,9 +135,10 @@ class Add:
 
             camera.release()
             cv2.destroyAllWindows()
+
             return "Added" + self.first_name + " to the database. Train model."
         else:
-            return "Error: model output 'user in database'. If not checked user, please do."
+            raise NotImplementedError("Model output 'user in database'. If not checked user, please do.")
 
     def getimagesandlabels(self, path):
         imagepaths = [os.path.join(path, f) for f in os.listdir(path)]
@@ -145,3 +162,18 @@ class Add:
         self.recognizer.train(faces, np.array(ids))
         self.recognizer.write('trainer/trainer.yml')
         return ids
+
+    def flush(self):
+        self.nationality = ""
+        self.first_name = ""
+        self.middle_name = ""
+        self.last_name = ""
+        self.gender = ""
+        self.age = 0
+        self.lev = 0
+        self.confidence = 0
+        self.df = pd.DataFrame()
+        self.details = []
+        self.recognizer = cv2.face.LBPHFaceRecognizer_create()
+        self.travelled = "No"
+        os.remove("data/csv/dataset.csv.decrypted")
