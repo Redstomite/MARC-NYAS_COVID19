@@ -6,11 +6,9 @@ from concurrent.futures import Future
 
 
 class Detect:
-    name = ""
     cam_names_dict = {}
 
-    def __init__(self, name):
-        self.name = name
+    def __init__(self):
         self.cam_names_dict = {}
 
     def setup(self, cam_location_names):
@@ -28,10 +26,9 @@ class Detect:
         recognizer.read('trainer/trainer.yml')
         facecascade = cv2.CascadeClassifier("cascade/haarcascade_frontalface_default.xml")
         len_of_cam_names_dict = len(self.cam_names_dict)
-        i = 0
 
         while True:
-            for i in range (0, len_of_cam_names_dict):
+            for i in range(0, len_of_cam_names_dict):
                 i = str(i)
                 cam = globals()["Cam" + i]
                 ret, img = cam.read()
@@ -52,19 +49,19 @@ class Detect:
                         "data/detected_faces/" + "Cam" + i + "/" + time_of_capture + ".jpg",
                         gray[y:y + h, x:x + w]
                     )
-                    yield "Face detected at " + self.len_of_cam_names_dict[
+                    yield "Face detected at " + self.cam_names_dict[
                         "Cam" + i] + "camera on " + time_of_capture + "."
                 time.sleep(fps)
                 k = cv2.waitKey(10) & 0xff
                 if k == 27:
                     break
 
-class MultiThreading():
+
+class MultiThreading:
     cam_names_dict = {}
 
-    def __init__(self, name):
+    def __init__(self):
         self.cam_names_dict = {}
-        threading.Thread.__init__(self)
 
     def setup(self, cam_location_names):
         count = 0
@@ -97,7 +94,7 @@ class MultiThreading():
         if not list_cam_num:
             list_cam_num = self.cam_names_dict.keys()
 
-        @self.threaded()
+        @self.threaded
         def interleaving_thread_scan_begin(cam_num):
             yield "Begun scanning for Cam" + cam_num
             while True:
@@ -124,14 +121,14 @@ class MultiThreading():
                           self.cam_names_dict["Cam"+cam_num] + "camera on " + time_of_capture + "."
                 time.sleep(fps)
 
-        scanner_list = []
-        for i in list_cam_num:
-            globals()["Scanner"+i] = self.interleaving_thread_scan_begin(i)
-            scanner_list.append(globals()["Scanner"+i])
+            scanner_list = []
+            for i in list_cam_num:
+                globals()["Scanner" + i] = interleaving_thread_scan_begin(i)
+                scanner_list.append(globals()["Scanner" + i])
 
-        while True:
-            for scanner in scanner_list:
-                if not scanner:
-                    pass
-                else:
-                    yield scanner
+            while True:
+                for scanner in scanner_list:
+                    if not scanner:
+                        pass
+                    else:
+                        yield scanner
