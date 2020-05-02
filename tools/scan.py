@@ -5,9 +5,25 @@ import os
 
 
 class Scan:
+    cur_path = os.path.dirname(__file__)
+    new_path = os.path.relpath("..\\data\\key.key", cur_path)
+    with open(new_path, "rb") as file:
+        key = file.read()
+    file.close()
+
+    new_path = os.path.relpath("..\\data\\csv\\dataset.encrypted.csv", cur_path)
+    with open(new_path, "rb") as f:
+        data = f.read()
+
+    fernet = Fernet(key)
+    token = fernet.decrypt(data)
+
+    with open("..\\data\\csv\\dataset.decrypted.csv", "wb") as f:
+        f.write(token)
 
     def __init__(self, ):
-        pass
+        path = "..\\data\\csv\\dataset.decrypted.csv"
+        self.df = pd.read_csv(path, index=False)
 
     def scan(self):
         recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -34,26 +50,12 @@ class Scan:
         idnum = 0
         confidence = 0
 
-        file = open("key.key", "rb")
-        key = file.read()
-        file.close()
-
-        with open("data/csv/dataset.csv.encrypted", "rb") as f:
-            data = f.read()
-
-        fernet = Fernet(key)
-        token = fernet.decrypt(data)
-
-        with open("data/csv/dataset.csv.decrypted", "wb") as f:
-            f.write(token)
-
-        df = pd.read_csv("data/csv/dataset.csv.decrypted", index=False)
-
         for (x, y, w, h) in faces:
             cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
             idnum, confidence = recognizer.predict(gray[y:y + h, x:x + w])
             confidence = round(100 - confidence)
 
-        output_details = df.iloc[[idnum]]
+        output_details = self.df.iloc[[idnum]]
+        output_details = output_details.values.tolist()
         os.remove("data/csv/dataset.csv.decrypted")
         return output_details, confidence

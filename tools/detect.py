@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 import threading
 from concurrent.futures import Future
+import pandas as pd
 
 
 class Detect:
@@ -10,6 +11,8 @@ class Detect:
 
     def __init__(self):
         self.cam_names_dict = {}
+        path = "..\\data\\csv\\img_taken_per_day.csv"
+        self.df = pd.read_csv(path, index=False)
 
     def setup(self, cam_location_names):
         count = 0
@@ -51,6 +54,18 @@ class Detect:
                     )
                     yield "Face detected at " + self.cam_names_dict[
                         "Cam" + i] + "camera on " + time_of_capture + "."
+
+                    row_num = 0
+                    for row in self.df.iterrows():
+                        row_num = row
+                    row_num += 1
+
+                    self.df.at[row_num, 0] = time_of_capture
+                    self.df.at[row_num, 0] = time_of_capture
+                    path = "..\\data\\csv\\img_taken_per_day.csv"
+                    with open(path, 'w') as f:
+                        self.df.to_csv(f, header=False)
+
                 time.sleep(fps)
                 k = cv2.waitKey(10) & 0xff
                 if k == 27:
@@ -114,11 +129,22 @@ class MultiThreading:
                 for (x, y, w, h) in faces:
                     time_of_capture = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     cv2.imwrite(
-                        "data/detected_faces/" + cam_num + "/" + time_of_capture + ".jpg",
+                        "data/detected_faces/" + time_of_capture + "/" + cam_num + ".jpg",
                         gray[y:y + h, x:x + w]
                     )
                     yield "Face detected at " + \
                           self.cam_names_dict["Cam"+cam_num] + "camera on " + time_of_capture + "."
+
+                    row_num = 0
+                    for row in self.df.iterrows():
+                        row_num = row
+                    row_num += 1
+
+                    self.df.at[row_num, 0] = time_of_capture
+                    self.df.at[row_num, 0] = time_of_capture
+                    path = "..\\data\\csv\\img_taken_per_day.csv"
+                    with open(path, 'w') as f:
+                        self.df.to_csv(f, header=False)
                 time.sleep(fps)
 
             scanner_list = []

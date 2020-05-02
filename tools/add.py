@@ -24,24 +24,6 @@ class Add:
     df = pd.DataFrame()
     recognizer = cv2.face.LBPHFaceRecognizer_create()
 
-    file = open("key.key", "rb")
-    key = file.read()
-    file.close()
-
-    with open("data/csv/dataset.csv.encrypted", "rb") as f:
-        data = f.read()
-
-    fernet = Fernet(key)
-    token = fernet.decrypt(data)
-
-    with open("data/csv/dataset.csv.decrypted", "wb") as f:
-        f.write(token)
-    """
-    Uses the Fernet key of the encrypted csv file to decrypt its contents and
-    create a new temporary file.
-    """
-
-
     def __init__(self):
         self.nationality = ""
         self.first_name = ""
@@ -65,15 +47,34 @@ class Add:
         details : list
             A list of details of the user.
         """
-        self.nationality = details[0]
-        self.nationality = details[1]
-        self.first_name = details[2]
-        self.middle_name = details[3]
-        self.last_name = details[4]
-        self.gender = details[5]
-        self.age = details[6]
-        self.travelled = details[7]
-        self.df = pd.read_csv("data/csv/dataset.csv.decyrpted", index=False)
+        self.nationality = details.append[0]
+        self.first_name = details[1]
+        self.middle_name = details[2]
+        self.last_name = details[3]
+        self.gender = details[4]
+        self.age = details[5]
+        self.travelled = details[6]
+
+        cur_path = os.path.dirname(__file__)
+        new_path = os.path.relpath("..\\data\\key.key", cur_path)
+        with open(new_path, "rb") as file:
+            key = file.read()
+        file.close()
+
+        new_path = os.path.relpath("..\\data\\csv\\dataset.encrypted.csv", cur_path)
+        with open(new_path, "rb") as f:
+            data = f.read()
+
+        fernet = Fernet(key)
+        token = fernet.decrypt(data)
+
+        with open("..\\data\\csv\\dataset.decrypted.csv", "wb") as f:
+            f.write(token)
+        """
+        Uses the Fernet key of the encrypted csv file to decrypt its contents and
+        create a new temporary file.
+        """
+        self.df = pd.read_csv("..\\data\\csv\\dataset.decrypted.csv", index=False)
 
     def check(self):
         """
@@ -133,9 +134,15 @@ class Add:
             for row in self.df.iterrows():
                 face_id = row
 
+            face_id += 1
             count = 0
             for val in self.details:
                 self.df.at[face_id, count] = val
+                count += 1
+
+            path = "..\\data\\csv\\dataset.decrypted.csv"
+            with open(path, 'w') as f:
+                self.df.to_csv(f, header=False)
 
             camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
             camera.set(3, 640)
@@ -160,6 +167,7 @@ class Add:
             cv2.destroyAllWindows()
 
             return "Added" + self.first_name + " to the database. Train model."
+
         else:
             raise NotImplementedError("Model output 'user in database'. If not checked user, please do.")
 
@@ -208,4 +216,19 @@ class Add:
         self.details = []
         self.recognizer = cv2.face.LBPHFaceRecognizer_create()
         self.travelled = "No"
-        os.remove("data/csv/dataset.csv.decrypted")
+
+        os.remove("..\\data\\csv\\dataset.encrypted.csv")
+        file = open('key.key', 'rb')
+        key = file.read()
+        file.close()
+
+        with open("..\\data\\csv\\dataset.decrypted.csv", 'rb') as f:
+            data = f.read()
+
+        fernet = Fernet(key)
+        encrypted = fernet.encrypt(data)
+
+        with open("..\\data\\csv\\dataset.encrypted.csv", 'wb') as f:
+            f.write(encrypted)
+
+        os.remove("..\\data\\csv\\dataset.decrypted.csv")
