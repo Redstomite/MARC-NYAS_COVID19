@@ -1,5 +1,7 @@
 # NYAS-COVID19-Challenge
 
+MARC - Monitor and Analyze Risk Covid19
+
 Created for the NYAS Combating COVID19 project
 
 Team:
