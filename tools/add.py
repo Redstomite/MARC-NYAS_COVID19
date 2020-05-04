@@ -200,7 +200,6 @@ class Add:
             faces, ids = self.getimagesandlabels(path)
             self.recognizer.train(faces, np.array(ids))
             self.recognizer.write('trainer/trainer.yml')
-            return ids
 
     def flush(self):
         self.nationality = ""

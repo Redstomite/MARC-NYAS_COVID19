@@ -1,0 +1,86 @@
+Documentation for tools/add.py
+"Program" means code which will access this package
+"User" means the traveller who is being dealt with
+
+
+Function: load()
+    Loads data into the module.
+    Parameters:
+        details = [First Name, Middle Name, Last name, Nationality, Gender, Age]
+            A list of details regarding the User to be inputted into the Program. Nationality in
+            country name (e.g. USA rather than "American")
+
+        cur_loc = Current Location
+            To be formatted in Airport Shortform, and country (e.g. JFK Int'l, USA)
+            International or domestic needs to be mentioned. Starting letters of Int'l or Domestic
+            need to be in capitals
+
+    Requirements:
+        flush() done
+
+    Output:
+        Type = string
+        "Loaded"
+
+    Errors:
+        NotImplementedError("Error: Please Flush First.")
+            flush() needs to be done for the function to operate.
+
+
+Function: check()
+    Checks if the current User is in the database
+    Parameters:
+        None
+
+    Requirements:
+        load() done
+
+    Output:
+        type = list
+        list[0]:
+            Retreived ID number
+        list[1]:
+            Confidence of the model (How confident the model is based on the User's face and the predicted face)
+        list[2]:
+            type = List
+            [First Name, Middle Name, Last name, Nationality, Gender, Age, Locations Travelled]
+        list[3]:
+            levenshtein's distance between inputted name and predicted name.
+            see https://github.com/Redstomite/pylevenshtein for more info
+
+    Errors:
+        NotImplementedError("Error: Please Load Details First.")
+
+
+Function: user_add()
+    Adds User's face and ID number to the trainer model, and the Users details to the database.
+    Parameters:
+        None
+
+    Requirements:
+        load() done
+        Recommended: check() done
+
+    Output:
+        "Added " + User's first name + " to the database. Train model."
+
+    Errors:
+        NotImplementedError("Error: Please Load Details First.")
+
+
+Function: train()
+    Trains yml model.
+    Parameters:
+        None
+
+    Requirements:
+        load() done
+
+    Output:
+        None
+
+    Errors:
+        NotImplementedError("Error: Please Load Details First.")
+
+Function: getimagesandlabel()
+    System function. Do not call.
