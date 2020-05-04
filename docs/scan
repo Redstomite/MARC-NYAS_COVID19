@@ -1,0 +1,37 @@
+Documentation for tools/scan.py
+"Program" means code which will access this package
+"User" means the traveller who is being dealt with
+
+Function: scan()
+    Scans face and returns details
+    Parameters:
+        None
+
+    Requirements:
+        None
+
+
+    Output:
+        type = List
+        [First Name, Middle Name, Last name, Nationality, Gender, Age, Locations Travelled]
+
+    Errors:
+        None
+
+
+Function: pin_location()
+    Adds current location to data
+    Parameters:
+        cur_loc = Current Location
+            To be formatted in Airport Shortform, and country (e.g. JFK Int'l, USA)
+            International or domestic needs to be mentioned. Starting letters of Int'l or Domestic
+            need to be in capitals
+
+    Requirements:
+        parameters() done
+
+    Output:
+        "Added."
+
+    Errors:
+        None

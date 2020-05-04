@@ -1,5 +1,7 @@
-from add import Add as MARC_Add
-from scan import Scan as MARC_Scan
+from MARCprototype import tools.add.py as MARC_Add
+from MARCprototype import tools.scan.py as MARC_Scan
+
+
 details_list = ["First Name", "Middle Name", "Last name", "Nationality", "Gender", "Age"]
 #
 current_location = "JFK Int'l, USA"

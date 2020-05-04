@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 import pylevenshtein as pylev
-from package_tools.datahandler import Data
+from .package_tools.datahandler import Data
 
 
 class Add:

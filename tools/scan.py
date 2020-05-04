@@ -1,11 +1,13 @@
 import cv2.cv2
 import time
+from .package_tools.datahandler import Data
 
 
 class Scan:
 
     def __init__(self, ):
         self.idnum = 0
+        self.datahandler = Data()
 
     def scan(self):
         recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -48,13 +50,11 @@ class Scan:
                 yield "Not detected yet"
                 time.sleep(0.5)
 
-
+        output_details = self.datahandler.get_user_details(self.idnum)
         yield "Returning details."
         yield output_details, confidence
 
     def pin_location(self, cur_loc):
         yield "Adding " + cur_loc + " to data."
-
-
-
-        return "Added " + cur_loc + " to " + self.name + "'s data."
+        self.datahandler.write_current_location(self.idnum, cur_loc)
+        yield "Added."

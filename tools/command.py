@@ -1,7 +1,7 @@
 import os
 import cv2
 import pandas as pd
-from package_tools.datahandler import Data
+from .package_tools.datahandler import Data
 
 
 class Command:
