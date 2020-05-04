@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from PIL import Image
 import pylevenshtein as pylev
-from cryptography.fernet import Fernet
+from package_tools.datahandler import Data
 
 
 class Add:
@@ -25,20 +25,24 @@ class Add:
     recognizer = cv2.face.LBPHFaceRecognizer_create()
 
     def __init__(self):
-        self.nationality = ""
         self.first_name = ""
         self.middle_name = ""
         self.last_name = ""
+        self.nationality = ""
         self.gender = ""
         self.age = 0
         self.lev = 0
         self.confidence = 0
-        self.df = pd.DataFrame()
         self.details = []
-        self.recognizer = cv2.face.LBPHFaceRecognizer_create()
-        self.travelled = "No"
+        self.travelled = False
+        self.current_location = ""
+        self.load_done = False
+        self.flush_done = False
+        self.check_done = False
 
-    def load(self, details):
+        self.datahandler = Data()
+
+    def load(self, details, cur_loc):
         """
         Loads data and sets values within the class.
 
@@ -46,109 +50,102 @@ class Add:
         ----------
         details : list
             A list of details of the user.
+        cur_loc : Current Location
+            Written in [Airport Name], [Country]
         """
-        self.nationality = details.append[0]
-        self.first_name = details[1]
-        self.middle_name = details[2]
-        self.last_name = details[3]
-        self.gender = details[4]
-        self.age = details[5]
-        self.travelled = details[6]
+        if self.flush_done:
+            self.first_name = details[0]
+            self.middle_name = details[1]
+            self.last_name = details[2]
+            self.nationality = details[3]
+            self.gender = details[4]
+            self.age = details[5]
+            self.travelled = details[6]
+            self.current_location = cur_loc
+            self.recognizer = cv2.face.LBPHFaceRecognizer_create()
+            self.load_done = True
 
-        cur_path = os.path.dirname(__file__)
-        new_path = os.path.relpath("..\\data\\key.key", cur_path)
-        with open(new_path, "rb") as file:
-            key = file.read()
-        file.close()
-
-        new_path = os.path.relpath("..\\data\\csv\\dataset.encrypted.csv", cur_path)
-        with open(new_path, "rb") as f:
-            data = f.read()
-
-        fernet = Fernet(key)
-        token = fernet.decrypt(data)
-
-        with open("..\\data\\csv\\dataset.decrypted.csv", "wb") as f:
-            f.write(token)
-        """
-        Uses the Fernet key of the encrypted csv file to decrypt its contents and
-        create a new temporary file.
-        """
-        self.df = pd.read_csv("..\\data\\csv\\dataset.decrypted.csv", index=False)
+            self.details = details
+            self.details.pop()
+            return "Loaded."
+        else:
+            return NotImplementedError("Error: Please Flush First.")
 
     def check(self):
         """
         Checks if user is in database.
         """
-        recognizer = cv2.face.LBPHFaceRecognizer_create()
-        recognizer.read("trainer/trainer.yml")
-        cascadepath = "haarcascade_frontalface_default.xml"
-        facecascade = cv2.CascadeClassifier(cascadepath)
-
-        cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-        cam.set(3, 640)
-        cam.set(4, 480)
-
-        minw = 0.1 * cam.get(3)
-        minh = 0.1 * cam.get(4)
-
-        ret, img = cam.read()
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = facecascade.detectMultiScale(
-            gray,
-            scaleFactor=1.2,
-            minNeighbors=5,
-            minSize=(int(minw), int(minh)),
-        )
-
-        output_details = []
-        idnum = 0
-        confidence = 0
-
-        for (x, y, w, h) in faces:
-            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            idnum, self.confidence = recognizer.predict(gray[y:y + h, x:x + w])
-            output_details = self.df.iloc[[idnum]]
-            self.confidence = round(100 - confidence)
-
-        if output_details[1] is None:
-            output_name = output_details[0] + " " + output_details[2]
+        if not self.load_done:
+            raise NotImplementedError("Error: Please Load Details First.")
         else:
-            output_name = output_details[0] + " " + output_details[1] + "" + output_details[2]
-        if self.middle_name is None:
-            input_name = self.first_name + " " + self.last_name
-        else:
-            input_name = self.first_name + " " + self.middle_name + " " + self.last_name
+            recognizer = cv2.face.LBPHFaceRecognizer_create()
+            recognizer.read("..\\trainer\\trainer.yml")
+            cascadepath = "..\\cascade\\haarcascade_frontalface_default.xml"
+            facecascade = cv2.CascadeClassifier(cascadepath)
 
-        lev = pylev.levenshtein.distc(output_name, input_name)
-        return_output = [idnum, self.confidence, output_details, lev]
+            cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+            cam.set(3, 640)
+            cam.set(4, 480)
 
-        return return_output
+            minw = 0.1 * cam.get(3)
+            minh = 0.1 * cam.get(4)
 
-    def user_add(self, confirm):
+            ret, img = cam.read()
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            faces = facecascade.detectMultiScale(
+                gray,
+                scaleFactor=1.2,
+                minNeighbors=5,
+                minSize=(int(minw), int(minh)),
+            )
+
+            confidence = 0
+
+            yield "Taking picture. Stand in front of camera."
+
+            face_detected = False
+
+            idnum = 0
+            while True:
+                if face_detected:
+                    yield "Face detected."
+                    break
+                else:
+                    for (x, y, w, h) in faces:
+                        cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                        idnum, self.confidence = recognizer.predict(gray[y:y + h, x:x + w])
+                        self.confidence = round(100 - confidence)
+                        face_detected = True
+            output_details = self.datahandler.get_user_details(idnum)
+
+            if output_details[1] is None:
+                output_name = output_details[0] + " " + output_details[2]
+            else:
+                output_name = output_details[0] + " " + output_details[1] + "" + output_details[2]
+            if self.middle_name is None:
+                input_name = self.first_name + " " + self.last_name
+            else:
+                input_name = self.first_name + " " + self.middle_name + " " + self.last_name
+
+            lev = pylev.levenshtein.distc(output_name, input_name)
+            return_output = [idnum, self.confidence, output_details, lev]
+
+            yield "Face identified."
+            return return_output
+
+    def user_add(self):
         """
         Adds user to database.
         """
-        if self.lev >= 2 and self.confidence <= 45 and confirm == "yes":
-            face_id = 0
-            for row in self.df.iterrows():
-                face_id = row
-
-            face_id += 1
-            count = 0
-            for val in self.details:
-                self.df.at[face_id, count] = val
-                count += 1
-
-            path = "..\\data\\csv\\dataset.decrypted.csv"
-            with open(path, 'w') as f:
-                self.df.to_csv(f, header=False)
-
+        if self.load_done:
             camera = cv2.VideoCapture(0, cv2.CAP_DSHOW)
             camera.set(3, 640)
             camera.set(4, 480)
-            face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+            face_detector = cv2.CascadeClassifier('..\\cascade\\haarcascade_frontalface_default.xml')
             count = 0
+            new_id = int(self.datahandler.get_idnum())
+            self.details.append(new_id)
+            self.datahandler.write_user_details(self.details)
 
             while True:
                 ret, img = camera.read()
@@ -157,19 +154,21 @@ class Add:
                 for (x, y, w, h) in faces:
                     cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
                     count += 1
-                    cv2.imwrite(self.nationality + "/User." + str(face_id) + '.' + str(count) + ".jpg", gray[y:y + h,
-                                                                                                        x:x + w])
+                    cv2.imwrite("..\\data\\images\\" + self.nationality + "\\User." + str(new_id) + '.' + str(count) +
+                                ".jpg", gray[y:y + h, x:x + w])
                     cv2.imshow('image', img)
+                    output = str(count) + " pictures taken."
+                    yield output
                 if count >= 40:
                     break
 
             camera.release()
             cv2.destroyAllWindows()
 
-            return "Added" + self.first_name + " to the database. Train model."
+            yield "Added " + self.first_name + " to the database. Train model."
 
         else:
-            raise NotImplementedError("Model output 'user in database'. If not checked user, please do.")
+            raise NotImplementedError("Error: Please Load Details First.")
 
     def getimagesandlabels(self, path):
         """
@@ -194,16 +193,16 @@ class Add:
         """
         Trains yml model.
         """
-        path = self.nationality
-        faces, ids = self.getimagesandlabels(path)
-        self.recognizer.train(faces, np.array(ids))
-        self.recognizer.write('trainer/trainer.yml')
-        return ids
+        if not self.load_done:
+            raise NotImplementedError("Error: Please Load Details First.")
+        else:
+            path = self.nationality
+            faces, ids = self.getimagesandlabels(path)
+            self.recognizer.train(faces, np.array(ids))
+            self.recognizer.write('trainer/trainer.yml')
+            return ids
 
     def flush(self):
-        """
-        Resets all values and destroys decrypted csv file.
-        """
         self.nationality = ""
         self.first_name = ""
         self.middle_name = ""
@@ -217,18 +216,6 @@ class Add:
         self.recognizer = cv2.face.LBPHFaceRecognizer_create()
         self.travelled = "No"
 
-        os.remove("..\\data\\csv\\dataset.encrypted.csv")
-        file = open('key.key', 'rb')
-        key = file.read()
-        file.close()
-
-        with open("..\\data\\csv\\dataset.decrypted.csv", 'rb') as f:
-            data = f.read()
-
-        fernet = Fernet(key)
-        encrypted = fernet.encrypt(data)
-
-        with open("..\\data\\csv\\dataset.encrypted.csv", 'wb') as f:
-            f.write(encrypted)
-
-        os.remove("..\\data\\csv\\dataset.decrypted.csv")
+        self.flush_done = True
+        self.load_done = False
+        self.check_done = False

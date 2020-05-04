@@ -1,35 +1,19 @@
-import cv2
-import pandas as pd
-from cryptography.fernet import Fernet
-import os
+import cv2.cv2
+import time
 
 
 class Scan:
-    cur_path = os.path.dirname(__file__)
-    new_path = os.path.relpath("..\\data\\key.key", cur_path)
-    with open(new_path, "rb") as file:
-        key = file.read()
-    file.close()
-
-    new_path = os.path.relpath("..\\data\\csv\\dataset.encrypted.csv", cur_path)
-    with open(new_path, "rb") as f:
-        data = f.read()
-
-    fernet = Fernet(key)
-    token = fernet.decrypt(data)
-
-    with open("..\\data\\csv\\dataset.decrypted.csv", "wb") as f:
-        f.write(token)
 
     def __init__(self, ):
-        path = "..\\data\\csv\\dataset.decrypted.csv"
-        self.df = pd.read_csv(path, index=False)
+        self.idnum = 0
 
     def scan(self):
         recognizer = cv2.face.LBPHFaceRecognizer_create()
-        recognizer.read('trainer/trainer.yml')
-        cascadepath = "haarcascade_frontalface_default.xml"
+        recognizer.read("..\\trainer\\trainer.yml")
+        cascadepath = "..\\cascade\\haarcascade_frontalface_default.xml"
         facecascade = cv2.CascadeClassifier(cascadepath)
+
+        yield "Initialized."
 
         cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         cam.set(3, 640)
@@ -47,15 +31,30 @@ class Scan:
             minSize=(int(minw), int(minh)),
         )
 
-        idnum = 0
         confidence = 0
+        face_detected = False
 
-        for (x, y, w, h) in faces:
-            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            idnum, confidence = recognizer.predict(gray[y:y + h, x:x + w])
-            confidence = round(100 - confidence)
+        yield "Beginning Scan."
+        while True:
+            if face_detected:
+                yield "Face detected."
+                break
+            else:
+                for (x, y, w, h) in faces:
+                    cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                    self.idnum, confidence = recognizer.predict(gray[y:y + h, x:x + w])
+                    confidence = round(100 - confidence)
+                    face_detected = True
+                yield "Not detected yet"
+                time.sleep(0.5)
 
-        output_details = self.df.iloc[[idnum]]
-        output_details = output_details.values.tolist()
-        os.remove("data/csv/dataset.csv.decrypted")
-        return output_details, confidence
+
+        yield "Returning details."
+        yield output_details, confidence
+
+    def pin_location(self, cur_loc):
+        yield "Adding " + cur_loc + " to data."
+
+
+
+        return "Added " + cur_loc + " to " + self.name + "'s data."

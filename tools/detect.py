@@ -13,16 +13,7 @@ class Detect:
         self.cam_names_dict = {}
         path = "..\\data\\csv\\img_taken_per_day.csv"
         self.df = pd.read_csv(path, index=False)
-
-    def setup(self, cam_location_names):
-        count = 0
-        cam_location_names = cam_location_names
-        for location in cam_location_names:
-            count = str(count)
-            globals()["Cam"+count] = cv2.VideoCapture(count, cv2.CAP_DSHOW)
-            self.cam_names_dict["Cam"+count] = location
-            count = int(count)
-            count += 1
+        self.cam_names_dict = {}
 
     def begin_scan(self, fps):
         recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -70,13 +61,6 @@ class Detect:
                 k = cv2.waitKey(10) & 0xff
                 if k == 27:
                     break
-
-
-class MultiThreading:
-    cam_names_dict = {}
-
-    def __init__(self):
-        self.cam_names_dict = {}
 
     def setup(self, cam_location_names):
         count = 0
