@@ -1,7 +1,6 @@
-Version (0.2)
+Version (0.3)
 
-Date: May 6
+Date: May 6 2:13 Pm IST
 
 Changes:
-* Added history
-* Added links in readme
+* Restructured docs/

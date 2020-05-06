@@ -1,0 +1,7 @@
+Step 1: Open command prompt
+
+Step 2: Type in pip install MARC-prototype
+
+Step 3: Call it using:
+    import importlib
+    mod = importlib.import_module("path.to.my-module")

@@ -9,7 +9,7 @@ with open("README.md", "r") as readme_file:
 setup(
     name='MARC_prototype',
     license='GPL',
-    version='0.0.1',
+    version='0.3',
     author_email="grokwithahul@gmail.com",
     description="NYAS COVID-19 Challenge",
     long_description=open("README.md").read(),
