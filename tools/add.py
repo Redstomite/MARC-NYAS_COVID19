@@ -1,6 +1,5 @@
 import cv2
 import os
-import pandas as pd
 import numpy as np
 from PIL import Image
 import pylevenshtein as pylev
@@ -21,7 +20,6 @@ class Add:
     lev = 0
     confidence = 0
     details = []
-    df = pd.DataFrame()
     recognizer = cv2.face.LBPHFaceRecognizer_create()
 
     def __init__(self):
@@ -210,7 +208,6 @@ class Add:
         self.age = 0
         self.lev = 0
         self.confidence = 0
-        self.df = pd.DataFrame()
         self.details = []
         self.recognizer = cv2.face.LBPHFaceRecognizer_create()
         self.travelled = "No"
