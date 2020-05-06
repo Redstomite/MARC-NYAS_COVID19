@@ -1,0 +1,14 @@
+README.md
+setup.py
+MARC_prototype.egg-info/PKG-INFO
+MARC_prototype.egg-info/SOURCES.txt
+MARC_prototype.egg-info/dependency_links.txt
+MARC_prototype.egg-info/top_level.txt
+tools/__init__.py
+tools/add.py
+tools/command.py
+tools/detect.py
+tools/scan.py
+tools/package_tools/__init__.py
+tools/package_tools/datahandler.py
+tools/package_tools/facialhandler.py

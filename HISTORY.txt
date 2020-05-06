@@ -1,0 +1,7 @@
+Version (0.2)
+
+Date: May 6
+
+Changes:
+* Added history
+* Added links in readme

@@ -1,0 +1,37 @@
+Metadata-Version: 1.2
+Name: MARC-prototype
+Version: 0.0.1
+Summary: NYAS COVID-19 Challenge
+Home-page: UNKNOWN
+Author: Rahul Prabhu
+Author-email: grokwithahul@gmail.com
+License: GPL
+Project-URL: Source, https://github.com/Redstomite/MARC-prototype
+Description: # NYAS-COVID19-Challenge
+        
+        MARC - Monitor and Analyze Risk Covid19
+        
+        Created for the NYAS Combating COVID19 project
+        
+        Team:
+        
+        Rahul P.
+        
+        Aria M.
+        
+        Viveka C.
+        
+        Fatima T.
+        
+        Code by: Rahul P.
+        
+        For modules, go to tools/
+        
+        for full documentation, go to docs/
+        
+        For sample implementations, go to docs/samples
+        
+        For installation help, go to docs/installation
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3.7
+Classifier: License :: OSI Approved :: MIT License
