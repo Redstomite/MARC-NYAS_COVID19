@@ -1,0 +1,17 @@
+Prototype tool -still in alpha testing-
+
+Functions:
+
+setup(cam_location_names)
+    Sets up the module
+
+begin_scan(fps)
+    Begins monitoring of cameras. Monitoring done one by one camera.
+
+interleaving_thread_scan(fps, list_cam_nums)
+    starts the interleaving thread scan. Multiprocessing tool.
+
+Other functions are system functions, not to be called.
+
+It will save pictures in data/detected_faces
+and return cam name, location, date

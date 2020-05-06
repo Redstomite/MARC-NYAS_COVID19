@@ -1,6 +1,5 @@
-import cv2.cv2
-import time
 from .package_tools.datahandler import Data
+from .package_tools.facialhandler import Face
 
 
 class Scan:
@@ -10,45 +9,13 @@ class Scan:
         self.datahandler = Data()
 
     def scan(self):
-        recognizer = cv2.face.LBPHFaceRecognizer_create()
-        recognizer.read("..\\trainer\\trainer.yml")
-        cascadepath = "..\\cascade\\haarcascade_frontalface_default.xml"
-        facecascade = cv2.CascadeClassifier(cascadepath)
 
-        yield "Initialized."
+        face_handler = Face()
 
-        cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-        cam.set(3, 640)
-        cam.set(4, 480)
+        self.idnum, confidence = face_handler.predict()
 
-        minw = 0.1 * cam.get(3)
-        minh = 0.1 * cam.get(4)
-
-        ret, img = cam.read()
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        faces = facecascade.detectMultiScale(
-            gray,
-            scaleFactor=1.2,
-            minNeighbors=5,
-            minSize=(int(minw), int(minh)),
-        )
-
-        confidence = 0
-        face_detected = False
-
-        yield "Beginning Scan."
-        while True:
-            if face_detected:
-                yield "Face detected."
-                break
-            else:
-                for (x, y, w, h) in faces:
-                    cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                    self.idnum, confidence = recognizer.predict(gray[y:y + h, x:x + w])
-                    confidence = round(100 - confidence)
-                    face_detected = True
-                yield "Not detected yet"
-                time.sleep(0.5)
+        if not face_handler.predict():
+            yield "Failed to detect face"
 
         output_details = self.datahandler.get_user_details(self.idnum)
         yield "Returning details."

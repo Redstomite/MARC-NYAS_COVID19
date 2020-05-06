@@ -1,13 +1,16 @@
 from tinydb import TinyDB, where, Query
 from datetime import datetime
+from cryptography.fernet import Fernet
+import os
 
 
 class Data:
     def __init__(self):
-        path_to_database= "../../data/csv/database.json"
-        self.db = TinyDB(path_to_database)
+        cur_path = os.path.dirname(__file__)
+#        path_to_database = os.path.relpath("data/csv/database.json", cur_path)
+#        self.db = TinyDB(path_to_database)
 
-        path_to_totals = "../../data/csv/totals.json"
+        path_to_totals = os.path.relpath("data/csv/totals.json", cur_path)
         self.db_totals = TinyDB(path_to_totals)
 
     def get_idnum(self):
@@ -43,3 +46,31 @@ class Data:
     def get_totals(self):
         totals_list = self.db_totals.all()
         return totals_list
+
+    def decrypt(self):
+        file = open("key.key", 'rb')
+        key = file.read()
+        file.close()
+
+        with open("../data/csv/database.json", 'rb') as f:
+            data = f.read()
+
+        fernet = Fernet(key)
+        decrypted = fernet.decrypt(data)
+
+        with open('../data/csv/database.json', 'wb') as f:
+            f.write(decrypted)
+
+    def encrypt(self):
+        file = open("key.key", 'rb')
+        key = file.read()
+        file.close()
+
+        with open("../data/csv/database.json", 'rb') as f:
+            data = f.read()
+
+        fernet = Fernet(key)
+        encrypted = fernet.encrypt(data)
+
+        with open('../data/csv/database.json', 'wb') as f:
+            f.write(encrypted)

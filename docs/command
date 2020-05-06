@@ -1,0 +1,23 @@
+Documentation for tools/command.py
+
+Function: get_cam_data()
+    Returns total detected faces on that date
+    Parameters:
+        date
+            To be inputted in datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+    Requirements:
+        None
+
+    Output:
+        Number of detected faces on that day
+
+    Errors:
+        None
+
+Function: get_totals()
+    Gets the totals(Imgs taken, Added, Scanned, etc)
+    Parameters:
+        None
+
+    Requirements:

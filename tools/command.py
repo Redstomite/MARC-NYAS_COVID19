@@ -7,7 +7,7 @@ from .package_tools.datahandler import Data
 class Command:
     def __init__(self):
         self.path_to_database = "data/csv/database.json"
-        self.path_to_images = "../data/detected_faces/"
+        self.path_to_images = "data/detected_faces/"
         self.datahandler = Data()
 
     def get_cam_data(self, date):
@@ -24,9 +24,9 @@ class Command:
         output_details_dict = self.datahandler.get_totals()
         return output_details_dict
 
-    def cam_hits_per_day(self, date):
-        path = "../data/csv/img_taken_per_day.csv"
+"""    def cam_hits_per_day(self, date):
+        path = "data/csv/img_taken_per_day.csv"
         df = pd.read_csv(path, index=False)
         cam_hits = df.iloc[[date]]
         output_details = cam_hits.values.tolist()
-        return output_details
+        return output_details""" # Under development

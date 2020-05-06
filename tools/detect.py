@@ -11,9 +11,19 @@ class Detect:
 
     def __init__(self):
         self.cam_names_dict = {}
-        path = "..\\data\\csv\\img_taken_per_day.csv"
+        path = "data\\csv\\img_taken_per_day.csv"
         self.df = pd.read_csv(path, index=False)
         self.cam_names_dict = {}
+
+    def setup(self, cam_location_names):
+        count = 0
+        cam_location_names = cam_location_names
+        for location in cam_location_names:
+            count = str(count)
+            globals()["Cam"+count] = cv2.VideoCapture(count, cv2.CAP_DSHOW)
+            self.cam_names_dict["Cam"+count] = location
+            count = int(count)
+            count += 1
 
     def begin_scan(self, fps):
         recognizer = cv2.face.LBPHFaceRecognizer_create()
@@ -53,7 +63,7 @@ class Detect:
 
                     self.df.at[row_num, 0] = time_of_capture
                     self.df.at[row_num, 0] = time_of_capture
-                    path = "..\\data\\csv\\img_taken_per_day.csv"
+                    path = "data\\csv\\img_taken_per_day.csv"
                     with open(path, 'w') as f:
                         self.df.to_csv(f, header=False)
 
@@ -61,16 +71,6 @@ class Detect:
                 k = cv2.waitKey(10) & 0xff
                 if k == 27:
                     break
-
-    def setup(self, cam_location_names):
-        count = 0
-        cam_location_names = cam_location_names
-        for location in cam_location_names:
-            count = str(count)
-            globals()["Cam"+count] = cv2.VideoCapture(count, cv2.CAP_DSHOW)
-            self.cam_names_dict["Cam"+count] = location
-            count = int(count)
-            count += 1
 
     def call_with_future(self, fn, future, args, kwargs):
         try:
@@ -126,7 +126,7 @@ class Detect:
 
                     self.df.at[row_num, 0] = time_of_capture
                     self.df.at[row_num, 0] = time_of_capture
-                    path = "..\\data\\csv\\img_taken_per_day.csv"
+                    path = "data\\csv\\img_taken_per_day.csv"
                     with open(path, 'w') as f:
                         self.df.to_csv(f, header=False)
                 time.sleep(fps)
