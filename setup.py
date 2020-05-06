@@ -4,7 +4,7 @@ with open("README.md", "r") as readme_file:
     readme = readme_file.read()
 
 setup(
-    name='MARCprototype',
+    name='MARC_prototype',
     license='GPL',
     version='0.0.1',
     author_email="grokwithahul@gmail.com",
